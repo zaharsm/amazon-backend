@@ -5,14 +5,15 @@ const Products = require("./Products");
 const mongoose = require('mongoose');
 const _ = require("lodash");
 const Orders = require('./Orders');
-const stripe = require('stripe')('sk_test_51NlBohSCM2T39KjUqUNHmbMj9wwvQ7do7OLwgmpaXRg8EoSRNsfOVR0bR2PpeAy2koULIvYVgHpoQBhpDGymEKdo00ktgfYm1m')
+const stripe = require('stripe')(process.env.STRIPE_KEY)
 
 
 const app = express();
-const port = process.env.PORT || 8000;
+const port = process.env.PORT ;
 const password = process.env.PASSWORD;
 // console.log(password)
 // console.log(port)
+
 // middleware
 
 app.use(express.json());
