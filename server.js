@@ -3,6 +3,8 @@ const cors = require('cors');
 const Products = require("./Products");
 const mongoose = require('mongoose');
 const _ = require("lodash");
+const Orders = require('./Orders');
+const stripe = require('stripe')('sk_test_51NlBohSCM2T39KjUqUNHmbMj9wwvQ7do7OLwgmpaXRg8EoSRNsfOVR0bR2PpeAy2koULIvYVgHpoQBhpDGymEKdo00ktgfYm1m')
 
 
 const app = express();
@@ -57,9 +59,81 @@ app.get("/products/add", (req, res) => {
 });
 
 
+// Orders API
+
+app.post('/orders/add',(req,res)=>{
+  const products = req.body.basket;
+  const email = req.body.email;
+  const address = req.body.address;
+  const price  = req.body.price;
+
+  const orderDetails = {
+      products: products,
+      email: email,
+      address: address,
+      price: price
+  }
+
+  console.log("Order Details >>>>", orderDetails);
+
+  Orders.create(orderDetails)
+  .then(data => {
+    res.status(201).send(data);
+  })
+  .catch(err => {
+    res.status(500).send(err.message);
+    console.error(err);
+  });
+
+
+})
+
+
+// Creating API for Stripe Payment
+
+app.post("/payment/create", async (req, res) => {
+  const total = req.body.amount;
+
+  // Validate the 'total' value
+  if (typeof total !== 'number' || total < 1) {
+    return res.status(400).json({ error: 'Invalid amount' });
+  }
+
+  console.log("Payment Request received for this rupees", total);
+
+  try {
+    const payment = await stripe.paymentIntents.create({
+      amount: total * 100, // Convert to cents
+      currency: "inr",
+    });
+
+    res.status(201).send({
+      clientSecret: payment.client_secret,
+    });
+  } catch (error) {
+    console.error("Error creating payment intent:", error);
+    res.status(500).json({ error: 'Payment intent creation failed' });
+  }
+});
+
+
+app.post("/orders/get", (req, res) => {
+  const email = req.body.email;
+
+  Orders.find()
+    .then(err => {
+      console.log(err);
+    })
+    .catch(err => {
+      const userOrders = result.filter((order) => order.email === email);
+
+      res.send(userOrders);
+    });
+  ;
+});
 
 // listen
-
 app.listen(port,()=>{
-    console.log('listening at port',port)
+console.log('listening at port',port)
 })
+
