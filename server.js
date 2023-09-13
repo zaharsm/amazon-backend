@@ -9,10 +9,10 @@ const stripe = require('stripe')('sk_test_51NlBohSCM2T39KjUqUNHmbMj9wwvQ7do7OLwg
 
 
 const app = express();
-const port =  8000;
+const port = process.env.PORT || 8000;
 const password = process.env.PASSWORD;
-console.log(password)
-
+// console.log(password)
+// console.log(port)
 // middleware
 
 app.use(express.json());
