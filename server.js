@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express =  require('express');
 const cors = require('cors');
 const Products = require("./Products");
@@ -9,6 +10,8 @@ const stripe = require('stripe')('sk_test_51NlBohSCM2T39KjUqUNHmbMj9wwvQ7do7OLwg
 
 const app = express();
 const port =  8000;
+const password = process.env.PASSWORD;
+console.log(password)
 
 // middleware
 
@@ -18,7 +21,7 @@ app.use(cors());
 
 // mongoose connect
 
-const connection_url = 'mongodb+srv://zahar:admin@cluster0.lrbne9s.mongodb.net/productsDB?retryWrites=true&w=majority';
+const connection_url = "mongodb+srv://zahar:"+password+"@cluster0.lrbne9s.mongodb.net/productsDB?retryWrites=true&w=majority";
 
 mongoose.connect(connection_url, { useUnifiedTopology: true})
 
